@@ -109,7 +109,13 @@ export function KPICard({ definition, data, ghostData, comparison }: KPICardProp
 
     const renderChart = () => {
         // Empty State
-        if (!data || data.length === 0) return <div className="flex items-center justify-center h-full text-slate-400 text-sm font-medium">No Data Available</div>;
+        // Empty State
+        if (!data || data.length === 0) return (
+            <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                <Minus size={32} className="opacity-20 mb-2" />
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">No Data</span>
+            </div>
+        );
 
         const gradId = `grad-${category}`;
 

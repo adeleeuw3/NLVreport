@@ -282,7 +282,7 @@ export const KPI_LIST: KPIDefinition[] = [
         title: "Employee Satisfaction",
         category: "People",
         visualization: "Gauge",
-        inputs: [{ id: "score", label: "Score (0-100)", type: "number", placeholder: "85" }]
+        inputs: [{ id: "score", label: "Score (0-100)", type: "array", placeholder: "85, 88" }]
     },
     {
         id: "ppl_impl",
@@ -296,21 +296,21 @@ export const KPI_LIST: KPIDefinition[] = [
         title: "Billability",
         category: "People",
         visualization: "Gauge",
-        inputs: [{ id: "score", label: "Percentage %", type: "number", placeholder: "80" }]
+        inputs: [{ id: "score", label: "Percentage %", type: "array", placeholder: "80, 82" }]
     },
     {
         id: "ppl_4cid",
         title: "4CI/D Adoption",
         category: "People",
         visualization: "Progress",
-        inputs: [{ id: "progress", label: "Progress %", type: "number", placeholder: "60" }]
+        inputs: [{ id: "progress", label: "Progress %", type: "array", placeholder: "60, 65" }]
     },
     {
         id: "ppl_hpa",
         title: "HPA Adoption",
         category: "People",
         visualization: "Progress",
-        inputs: [{ id: "progress", label: "Progress %", type: "number", placeholder: "40" }]
+        inputs: [{ id: "progress", label: "Progress %", type: "array", placeholder: "40, 45" }]
     },
 
     // --- HELPDESK (3 items) ---

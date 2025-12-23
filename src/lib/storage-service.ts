@@ -11,6 +11,15 @@ export interface ReportDocument {
     userId?: string;
 }
 
+export interface DashboardDocument {
+    id: string; // Auto-generated unique ID
+    title: string;
+    formData: any; // Complete form data
+    createdAt: number;
+    updatedAt: number;
+    userId: string;
+}
+
 export const StorageService = {
     /**
      * Save a report to Firestore under a specific user.
@@ -119,6 +128,91 @@ export const StorageService = {
             return { success: true };
         } catch (error) {
             console.error("Error deleting report:", error);
+            return { success: false, error };
+        }
+    },
+
+    // ==================== DASHBOARD METHODS ====================
+
+    /**
+     * Save a complete dashboard with title.
+     * Path: users/{uid}/dashboards/{dashboardId}
+     */
+    async saveDashboard(uid: string, title: string, formData: any, dashboardId?: string) {
+        if (!uid) return { success: false, error: "User not authenticated" };
+
+        try {
+            const id = dashboardId || `dashboard_${Date.now()}`;
+            const docRef = doc(db, "users", uid, "dashboards", id);
+
+            const payload: DashboardDocument = {
+                id,
+                title,
+                formData,
+                createdAt: dashboardId ? (await getDoc(docRef)).data()?.createdAt || Date.now() : Date.now(),
+                updatedAt: Date.now(),
+                userId: uid
+            };
+
+            await setDoc(docRef, payload);
+            console.log("Dashboard saved successfully:", id);
+            return { success: true, id };
+        } catch (error) {
+            console.error("Error saving dashboard:", error);
+            return { success: false, error };
+        }
+    },
+
+    /**
+     * Get all dashboards for a user.
+     */
+    async getDashboards(uid: string): Promise<DashboardDocument[]> {
+        if (!uid) return [];
+        try {
+            const dashboardsRef = collection(db, "users", uid, "dashboards");
+            const snapshot = await getDocs(dashboardsRef);
+
+            return snapshot.docs
+                .map(doc => doc.data() as DashboardDocument)
+                .sort((a, b) => b.updatedAt - a.updatedAt); // Most recent first
+        } catch (error) {
+            console.error("Error fetching dashboards:", error);
+            return [];
+        }
+    },
+
+    /**
+     * Get a specific dashboard by ID.
+     */
+    async getDashboard(uid: string, dashboardId: string): Promise<DashboardDocument | null> {
+        if (!uid) return null;
+        try {
+            const docRef = doc(db, "users", uid, "dashboards", dashboardId);
+            const snapshot = await getDoc(docRef);
+
+            if (snapshot.exists()) {
+                return snapshot.data() as DashboardDocument;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error("Error loading dashboard:", error);
+            return null;
+        }
+    },
+
+    /**
+     * Delete a dashboard.
+     */
+    async deleteDashboard(uid: string, dashboardId: string) {
+        if (!uid) return { success: false, error: "User not authenticated" };
+        try {
+            const docRef = doc(db, "users", uid, "dashboards", dashboardId);
+            await deleteDoc(docRef);
+            console.log("Dashboard deleted successfully:", dashboardId);
+            return { success: true };
+        } catch (error) {
+            console.error("Error deleting dashboard:", error);
             return { success: false, error };
         }
     }

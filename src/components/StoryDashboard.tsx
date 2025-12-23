@@ -3,30 +3,73 @@
 import React from "react";
 import { KPICard } from "@/components/KPICard";
 import { KPI_LIST } from "@/lib/kpi-definitions";
-import { calculateTrend } from "@/lib/comparison-utils";
+import { compareData } from "@/lib/comparison-utils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Download } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ChevronLeft, Download, Save } from "lucide-react";
+import { StorageService } from "@/lib/storage-service";
+import { useToast } from "@/components/ui/toast-context";
+import { useState } from "react";
 
 interface StoryDashboardProps {
     formData: any;
     previousData?: any | null;
     onBack: () => void;
+    onSave?: (title: string) => void;
+    uid?: string;
+    initialTitle?: string;
 }
 
-export function StoryDashboard({ formData, previousData, onBack }: StoryDashboardProps) {
+export function StoryDashboard({ formData, previousData, onBack, onSave, uid, initialTitle = "" }: StoryDashboardProps) {
+    const [showSaveDialog, setShowSaveDialog] = useState(false);
+    const [dashboardTitle, setDashboardTitle] = useState(initialTitle);
+    const { addToast } = useToast();
+
+    const handleSaveDashboard = async () => {
+        if (!uid) {
+            addToast("User not authenticated", "error");
+            return;
+        }
+
+        if (!dashboardTitle.trim()) {
+            addToast("Please enter a title", "warning");
+            return;
+        }
+
+        const result = await StorageService.saveDashboard(uid, dashboardTitle, formData);
+        if (result.success) {
+            addToast("Dashboard saved successfully!", "success");
+            setShowSaveDialog(false);
+            if (onSave) onSave(dashboardTitle);
+        } else {
+            addToast("Failed to save dashboard", "error");
+        }
+    };
+
+    // Expose chart extraction for the utility - Wrap getChartData to solve scoping
+    const extractChartDataHelp = (id: string, source: any) => getChartData(id, source === previousData);
 
     const getComparison = (kpiId: string) => {
         if (!previousData || !formData) return null;
 
-        // Use the chart data logic to get comparable numbers (Sum of values)
-        const currChart = getChartData(kpiId, false);
-        const prevChart = getChartData(kpiId, true);
+        // The comparison-utils.ts expects (data: any) => number
+        // We need to extract a single representative value for the KPI data object
+        const extractValue = (kpiData: any) => {
+            if (!kpiData) return 0;
+            // If it has a 'value' field (simple KPIs)
+            if (kpiData.value !== undefined) return Number(kpiData.value);
+            // If it has 'data' string with comma separated values, take the last non-empty one
+            if (kpiData.data) {
+                const vals = kpiData.data.split(",").filter((s: string) => s.trim() !== "");
+                return vals.length > 0 ? Number(vals[vals.length - 1]) : 0;
+            }
+            // Fallback: check standard fields
+            return Number(kpiData.wins || kpiData.nl || kpiData.in || kpiData.mooc_c || 0);
+        };
 
-        const currVal = currChart.reduce((acc, item) => acc + (Number(item.value) || 0), 0);
-        const prevVal = prevChart.reduce((acc, item) => acc + (Number(item.value) || 0), 0);
-
-        return calculateTrend(currVal, prevVal);
+        return compareData(kpiId, formData, previousData, extractValue);
     };
 
     const getChartData = (kpiId: string, isGhost: boolean = false) => {
@@ -143,11 +186,56 @@ export function StoryDashboard({ formData, previousData, onBack }: StoryDashboar
         <div className="w-full pb-20 animate-in fade-in duration-700">
             <div className="flex justify-between items-center mb-8">
                 <Button variant="ghost" onClick={onBack} className="text-slate-500 hover:text-slate-800">
-                    <ChevronLeft className="mr-2" size={16} /> Edit Data
+                    <ChevronLeft className="mr-2" size={16} /> Back to Library
                 </Button>
-                <Button variant="outline" className="glass-card bg-white shadow-sm hover:bg-slate-50">
-                    <Download className="mr-2" size={16} /> Export Report
-                </Button>
+                <div className="flex gap-2">
+                    {uid && (
+                        <Button
+                            onClick={() => setShowSaveDialog(true)}
+                            className="bg-[var(--primary)] hover:bg-[var(--secondary)] text-white shadow-md"
+                        >
+                            <Save className="mr-2" size={16} /> Save Dashboard
+                        </Button>
+                    )}
+                    <Button variant="outline" className="glass-card bg-white shadow-sm hover:bg-slate-50">
+                        <Download className="mr-2" size={16} /> Export Report
+                    </Button>
+                </div>
+            </div>
+
+            {/* SAVE DASHBOARD DIALOG */}
+            <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                <DialogContent className="glass-card">
+                    <DialogHeader>
+                        <DialogTitle>Save Dashboard</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Input
+                            value={dashboardTitle}
+                            onChange={(e) => setDashboardTitle(e.target.value)}
+                            placeholder="Enter dashboard title (e.g., Q1 2025 Report)"
+                            className="w-full"
+                            onKeyDown={(e) => e.key === "Enter" && handleSaveDashboard()}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleSaveDashboard} className="bg-[var(--primary)] hover:bg-[var(--secondary)] text-white">
+                            Save
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* HEADER IMAGE */}
+            <div className="w-full flex justify-center mb-8 px-4">
+                <img
+                    src="/nlv-header.png"
+                    alt="NLV 2026 Objectives: International, National, HPA, Tech, Culture, Process"
+                    className="w-full max-w-6xl rounded-xl shadow-sm border border-slate-100"
+                />
             </div>
 
             <div className="text-center mb-10">

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { KPI_LIST, KPICategory } from "@/lib/kpi-definitions";
+import { useToast } from "@/components/ui/toast-context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -16,12 +17,12 @@ interface MegaInputFormProps {
 }
 
 export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
-    // State for multi-selection
+    const { addToast } = useToast();
     const [selectedMonths, setSelectedMonths] = useState<string[]>(["Jan"]);
     const [formData, setFormData] = useState<any>({});
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [title, setTitle] = useState("");
-    const [status, setStatus] = useState<string>("");
+    // const [status, setStatus] = useState<string>(""); // REPLACED BY TOAST
     const [isDeleteConfirm, setIsDeleteConfirm] = useState(false);
 
     // Derived label for save/display
@@ -30,7 +31,16 @@ export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
     const isYearMode = selectedMonths.length === 12;
 
     const handleGenerate = async () => {
-        // Comparison removed as per request
+        // VALIDATION: Check if at least one KPI has data
+        const hasData = Object.values(formData).some((kpiData: any) =>
+            Object.values(kpiData).some((val: any) => val && val.trim() !== "")
+        );
+
+        if (!hasData) {
+            addToast("Please fill in at least one KPI before generating.", "warning");
+            return;
+        }
+
         onGenerate(formData, null);
     };
 
@@ -41,7 +51,7 @@ export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
     };
 
     const loadMergedData = async (monthsToLoad: string[]) => {
-        setStatus("Loading...");
+        // setStatus("Loading...");
         try {
             const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const reports = await Promise.all(monthsToLoad.map(m => StorageService.getReport(uid, m, year)));
@@ -78,8 +88,9 @@ export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
                         // Let's take the first found valid value from the selected months (reverse order to prioritize later months?)
                         kpiData[input.id] = "";
                         for (let i = reports.length - 1; i >= 0; i--) {
-                            if (reports[i]?.data?.[kpi.id]?.[input.id]) {
-                                kpiData[input.id] = reports[i]?.data?.[kpi.id]?.[input.id] || "";
+                            const report = reports[i];
+                            if (report?.data?.[kpi.id]?.[input.id]) {
+                                kpiData[input.id] = report.data![kpi.id][input.id];
                                 break;
                             }
                         }
@@ -90,11 +101,14 @@ export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
 
             setFormData(mergedData);
             if (loadedTitle) setTitle(loadedTitle);
-            setStatus(foundAny ? "Loaded!" : "New Draft");
-            setTimeout(() => setStatus(""), 1000);
+            setFormData(mergedData);
+            if (loadedTitle) setTitle(loadedTitle);
+            if (foundAny) addToast(`Loaded data for ${displayMonth}`, "info");
+            // setStatus(foundAny ? "Loaded!" : "New Draft");
+            // setTimeout(() => setStatus(""), 1000);
         } catch (e) {
             console.error(e);
-            setStatus("Error");
+            addToast("Error loading data", "error");
         }
     };
 
@@ -139,17 +153,17 @@ export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
     };
 
     const handleSave = async () => {
-        setStatus("Saving...");
+        // setStatus("Saving...");
         try {
             const promises = selectedMonths.map(m =>
                 StorageService.saveReport(uid, m, year, formData, title)
             );
             await Promise.all(promises);
-            setStatus("Saved All!");
+            addToast(`Successfully saved data for ${displayMonth}`, "success");
             await refreshSavedMonths();
-            setTimeout(() => setStatus(""), 2000);
+            // setTimeout(() => setStatus(""), 2000);
         } catch (e) {
-            setStatus("Error Saving");
+            addToast("Failed to save data", "error");
         }
     };
 
@@ -172,24 +186,21 @@ export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
         }
         setIsDeleteConfirm(false);
 
-        setStatus("Deleting...");
         try {
             const promises = selectedMonths.map(m =>
                 StorageService.deleteReport(uid, m, year)
             );
             await Promise.all(promises);
+            addToast("Data cleared successfully", "success");
 
             await loadMergedData(selectedMonths);
             await refreshSavedMonths();
 
-            setStatus("Deleted!");
-            setTimeout(() => setStatus(""), 2000);
         } catch (e) {
             console.error(e);
-            setStatus("Error Clearing");
+            addToast("Error clearing data", "error");
         }
     };
-
 
 
 
