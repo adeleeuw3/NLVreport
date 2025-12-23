@@ -155,12 +155,23 @@ export function StoryDashboard({ formData, previousData, onBack, onSave, uid, in
                 }).filter((x: any) => x.name);
             }
             else if (kpi.visualization === "Radar") {
-                chartData = [
-                    { name: "Design", value: Number(data.design || 0) },
-                    { name: "Support", value: Number(data.support || 0) },
-                    { name: "Data", value: Number(data.data || 0) },
-                    { name: "Perform", value: Number(data.perform || 0) },
-                ];
+                // Handle different Radar charts based on KPI ID
+                if (kpiId === "sales_geo") {
+                    // Distribution (NL/BE/DE)
+                    chartData = [
+                        { name: "NL", value: Number(data.nl || 0) },
+                        { name: "BE", value: Number(data.be || 0) },
+                        { name: "DE", value: Number(data.de || 0) },
+                    ];
+                } else {
+                    // Product Demos (Design, Support, Data, Perform)
+                    chartData = [
+                        { name: "Design", value: Number(data.design || 0) },
+                        { name: "Support", value: Number(data.support || 0) },
+                        { name: "Data", value: Number(data.data || 0) },
+                        { name: "Perform", value: Number(data.perform || 0) },
+                    ];
+                }
             }
             else if (["Gauge", "Progress"].includes(kpi.visualization)) {
                 chartData = [{ name: "Score", value: Number(data.score || data.progress || 0) }];
