@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Glass Utilities */
+  --backdrop-blur-glass: 20px;
+}
+
+:root {
+  /* Dynamic Background - "Apple-like Liquid Glass" */
+  --background-start: #FEF7EE;
+  --background-end: #FFF0E0;
+
+  --background: #FEF7EE;
+  --foreground: #1e293b;
+  /* Slate-800 for better readability on light */
+
+  /* Brand Colors */
+  --primary: #FF914D;
+  /* The requested orange */
+  --secondary: #FFB07E;
+  /* Lighter orange for details */
+  --accent: #38bdf8;
+  /* Sky blue for contrast/coolness if needed */
+
+  /* Glass Variables */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  /* Much more opaque for better contrast */
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+
+  /* Keeping light mode as default for the "Liquid Glass" request, 
+     but overriding if user forces dark mode system-wide? 
+     Actually, user requested "Light Colors" specifically.
+     Let's keep it consistent. */
+  :root {
+    --background: #FEF7EE;
+    --foreground: #0f172a;
+    /* Slate 900 */
+  }
+}
+
+body {
+  background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom Glass Class */
+@utility glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
