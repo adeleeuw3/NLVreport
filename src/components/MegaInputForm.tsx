@@ -79,7 +79,7 @@ export function MegaInputForm({ onGenerate, uid }: MegaInputFormProps) {
                         kpiData[input.id] = "";
                         for (let i = reports.length - 1; i >= 0; i--) {
                             if (reports[i]?.data?.[kpi.id]?.[input.id]) {
-                                kpiData[input.id] = reports[i].data![kpi.id][input.id];
+                                kpiData[input.id] = reports[i]?.data?.[kpi.id]?.[input.id] || "";
                                 break;
                             }
                         }

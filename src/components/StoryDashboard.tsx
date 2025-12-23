@@ -3,7 +3,7 @@
 import React from "react";
 import { KPICard } from "@/components/KPICard";
 import { KPI_LIST } from "@/lib/kpi-definitions";
-import { compareData } from "@/lib/comparison-utils";
+import { calculateTrend } from "@/lib/comparison-utils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, Download } from "lucide-react";
@@ -16,12 +16,17 @@ interface StoryDashboardProps {
 
 export function StoryDashboard({ formData, previousData, onBack }: StoryDashboardProps) {
 
-    // Expose chart extraction for the utility - Wrap getChartData to solve scoping
-    const extractChartDataHelp = (id: string, source: any) => getChartData(id, source === previousData);
-
     const getComparison = (kpiId: string) => {
         if (!previousData || !formData) return null;
-        return compareData(kpiId, formData, previousData, extractChartDataHelp);
+
+        // Use the chart data logic to get comparable numbers (Sum of values)
+        const currChart = getChartData(kpiId, false);
+        const prevChart = getChartData(kpiId, true);
+
+        const currVal = currChart.reduce((acc, item) => acc + (Number(item.value) || 0), 0);
+        const prevVal = prevChart.reduce((acc, item) => acc + (Number(item.value) || 0), 0);
+
+        return calculateTrend(currVal, prevVal);
     };
 
     const getChartData = (kpiId: string, isGhost: boolean = false) => {

@@ -290,10 +290,6 @@ export function KPICard({ definition, data, ghostData, comparison }: KPICardProp
                 return <div className="flex items-center justify-center h-full w-full">{renderMiscCharts(visualization, data, themeColor)}</div>;
 
             default:
-                if (visualization === "Map") {
-                    const mData = { nl: data.find(d => d.name === "NL")?.value || 0, be: data.find(d => d.name === "BE")?.value || 0, de: data.find(d => d.name === "DE")?.value || 0 };
-                    return <EuropeMap data={mData} />;
-                }
                 return <div className="flex items-center justify-center h-full text-slate-400">?</div>;
         }
     };

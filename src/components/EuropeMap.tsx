@@ -36,7 +36,7 @@ export function EuropeMap({ data }: EuropeMapProps) {
                 className="w-full h-full"
             >
                 <Geographies geography={geoUrl}>
-                    {({ geographies }) =>
+                    {({ geographies }: { geographies: any[] }) =>
                         geographies
                             .filter(d => ["NLD", "BEL", "DEU", "FRA", "LUX", "GBR", "CHE", "AUT", "DNK", "POL", "CZE"].includes(d.properties.iso_a3))
                             .map((geo) => (
