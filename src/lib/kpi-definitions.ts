@@ -116,10 +116,9 @@ export const KPI_LIST: KPIDefinition[] = [
         id: "sales_quotes",
         title: "Quote Requests",
         category: "Sales",
-        visualization: "Sparkline",
+        visualization: "LineChart",
         inputs: [
-            { id: "current", label: "Current Total", type: "number", placeholder: "24" },
-            { id: "trend", label: "History (Last 12)", type: "array", placeholder: "18, 20" }
+            { id: "data", label: "Quotes per Month", type: "array", placeholder: "18, 20, 22, 24" }
         ]
     },
     {
