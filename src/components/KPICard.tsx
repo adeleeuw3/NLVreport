@@ -213,9 +213,9 @@ export function KPICard({ definition, data, ghostData, comparison }: KPICardProp
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                             <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} dy={5} />
                             <Tooltip content={<CustomTooltip />} cursor={{ fill: "#f8fafc" }} />
-                            <Bar dataKey="value" name="Value" fill={themeColor} radius={[6, 6, 0, 0]} maxBarSize={60} />
+                            <Bar dataKey="value" name={definition.lineNames?.[0] || "Value"} fill={themeColor} radius={[6, 6, 0, 0]} maxBarSize={60} />
                             {data[0]?.value2 !== undefined && (
-                                <Bar dataKey="value2" name="Secondary" fill={themeColor} fillOpacity={0.4} radius={[6, 6, 0, 0]} maxBarSize={60} />
+                                <Bar dataKey="value2" name={definition.lineNames?.[1] || "Secondary"} fill={themeColor} fillOpacity={0.4} radius={[6, 6, 0, 0]} maxBarSize={60} />
                             )}
                         </BarChart>
                     </ResponsiveContainer>

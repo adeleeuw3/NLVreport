@@ -170,6 +170,7 @@ export const KPI_LIST: KPIDefinition[] = [
         title: "Upsells vs Resells",
         category: "Community",
         visualization: "GroupedBar",
+        lineNames: ["Upsells", "Resells"],
         inputs: [
             { id: "upsell", label: "Upsell Volume", type: "number", placeholder: "5000" },
             { id: "resell", label: "Resell Volume", type: "number", placeholder: "2000" }

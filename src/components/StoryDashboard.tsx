@@ -48,6 +48,10 @@ export function StoryDashboard({ formData, previousData, onBack, onSave, uid, in
         }
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
     // Expose chart extraction for the utility - Wrap getChartData to solve scoping
     const extractChartDataHelp = (id: string, source: any) => getChartData(id, source === previousData);
 
@@ -197,8 +201,8 @@ export function StoryDashboard({ formData, previousData, onBack, onSave, uid, in
                             <Save className="mr-2" size={16} /> Save Dashboard
                         </Button>
                     )}
-                    <Button variant="outline" className="glass-card bg-white shadow-sm hover:bg-slate-50">
-                        <Download className="mr-2" size={16} /> Export Report
+                    <Button onClick={handlePrint} variant="outline" className="glass-card bg-white shadow-sm hover:bg-slate-50">
+                        <Download className="mr-2" size={16} /> Print / Export PDF
                     </Button>
                 </div>
             </div>
