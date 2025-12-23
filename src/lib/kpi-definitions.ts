@@ -182,6 +182,7 @@ export const KPI_LIST: KPIDefinition[] = [
         category: "Community",
         visualization: "GroupedBar",
         description: "Events vs Participants",
+        lineNames: ["Events", "Participants"],
         inputs: [
             // MOOCs
             { id: "mooc_c", label: "MOOCs: Events", type: "number", placeholder: "4" },
