@@ -236,8 +236,8 @@ export function StoryDashboard({ formData, previousData, onBack, onSave, uid, in
             {/* HEADER IMAGE */}
             <div className="w-full flex justify-center mb-8 px-4">
                 <img
-                    src="/nlv-header.png"
-                    alt="NLV 2026 Objectives: International, National, HPA, Tech, Culture, Process"
+                    src="/nlv-objectives.png"
+                    alt="NLV 2026 Objectives: International Growth, National Growth, High Performance Academy, Technology Development, Culture & Team Development, Process Development"
                     className="w-full max-w-6xl rounded-xl shadow-sm border border-slate-100"
                 />
             </div>
