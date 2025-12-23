@@ -137,7 +137,7 @@ export const KPI_LIST: KPIDefinition[] = [
         id: "sales_geo",
         title: "Distribution (NL/BE/DE)",
         category: "Sales",
-        visualization: "Map", // Changed from Donut
+        visualization: "Radar",
         inputs: [
             { id: "nl", label: "Netherlands", type: "number", placeholder: "60" },
             { id: "be", label: "Belgium", type: "number", placeholder: "30" },
