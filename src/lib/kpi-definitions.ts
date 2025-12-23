@@ -107,10 +107,9 @@ export const KPI_LIST: KPIDefinition[] = [
         id: "sales_rfi",
         title: "Number of RFIs",
         category: "Sales",
-        visualization: "Sparkline",
+        visualization: "LineChart",
         inputs: [
-            { id: "current", label: "Current Total", type: "number", placeholder: "15" },
-            { id: "trend", label: "History (Last 12)", type: "array", placeholder: "10, 12, 14" }
+            { id: "data", label: "RFIs per Month", type: "array", placeholder: "10, 12, 14, 15" }
         ]
     },
     {
