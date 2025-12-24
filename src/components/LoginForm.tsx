@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Lock, Mail, AlertCircle } from "lucide-react";
+import { NetworkBackground } from "@/components/NetworkBackground";
 
 export function LoginForm({ onLogin }: { onLogin: (user: any) => void }) {
     const [email, setEmail] = useState("");
@@ -37,8 +38,13 @@ export function LoginForm({ onLogin }: { onLogin: (user: any) => void }) {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-[60vh] animate-in fade-in duration-700">
-            <Card className="w-full max-w-md glass-card bg-white/80 border-white/50 shadow-2xl">
+        <div className="flex items-center justify-center min-h-[60vh] animate-in fade-in duration-700 relative">
+            {/* Background Visualization */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vh] fixed -z-10 opacity-100 pointer-events-none">
+                <NetworkBackground />
+            </div>
+
+            <Card className="w-full max-w-md bg-white/95 border-white/60 shadow-2xl relative z-10 backdrop-blur-md">
                 <CardHeader className="text-center pb-2">
                     <div className="mx-auto w-12 h-12 bg-[var(--primary)] rounded-full flex items-center justify-center mb-4 shadow-lg shadow-orange-200">
                         <Lock className="text-white" size={20} />
