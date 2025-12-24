@@ -4,64 +4,104 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 
   /* Glass Utilities */
   --backdrop-blur-glass: 20px;
 }
 
 :root {
-  /* Dynamic Background - "Apple-like Liquid Glass" */
-  --background-start: #FEF7EE;
-  --background-end: #FFF0E0;
-
-  --background: #FEF7EE;
+  /* Liquid Glass Palette */
+  --background: #fff7ed;
+  /* Orange-50 */
   --foreground: #1e293b;
-  /* Slate-800 for better readability on light */
+  /* Slate-800 */
 
-  /* Brand Colors */
-  --primary: #FF914D;
-  /* The requested orange */
-  --secondary: #FFB07E;
-  /* Lighter orange for details */
+  --primary: #f97316;
+  /* Orange-500 */
+  --primary-hover: #ea580c;
+  /* Orange-600 */
+  --secondary: #ffb07e;
   --accent: #38bdf8;
-  /* Sky blue for contrast/coolness if needed */
 
   /* Glass Variables */
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  /* Much more opaque for better contrast */
-  --glass-border: rgba(255, 255, 255, 0.9);
-  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-@media (prefers-color-scheme: dark) {
-
-  /* Keeping light mode as default for the "Liquid Glass" request, 
-     but overriding if user forces dark mode system-wide? 
-     Actually, user requested "Light Colors" specifically.
-     Let's keep it consistent. */
-  :root {
-    --background: #FEF7EE;
-    --foreground: #0f172a;
-    /* Slate 900 */
-  }
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 4px 20px rgba(249, 115, 22, 0.03);
 }
 
 body {
-  background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+  background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Custom Glass Class */
-@utility glass-card {
-  background: var(--glass-bg);
+/* Custom Utilities */
+@utility glass-panel {
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px 0 rgba(249, 115, 22, 0.05);
+}
+
+@utility glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(249, 115, 22, 0.1);
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+@utility glass-input {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(236, 224, 219, 0.6);
+  transition: all 0.3s ease;
+
+  &:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(236, 127, 19, 0.1);
+    outline: none;
+  }
+}
+
+@utility liquid-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Animations */
+@keyframes floatBlob {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(30px, 30px) scale(1.1);
+  }
+}
+
+@utility animate-float {
+  animation: floatBlob 10s infinite alternate ease-in-out;
 }

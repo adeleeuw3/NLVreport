@@ -111,13 +111,33 @@ export function KPICard({ definition, data, ghostData, comparison }: KPICardProp
         // Empty State
         // Empty State
         if (!data || data.length === 0) return (
-            <div className="flex flex-col items-center justify-center h-full text-slate-400">
+            <div className="flex flex-col items-center justify-center h-full text-slate-300">
                 <Minus size={32} className="opacity-20 mb-2" />
-                <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">No Data</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">No Data</span>
             </div>
         );
 
         const gradId = `grad-${category}`;
+
+        // Special handling for "Counter" / Metrics to match the "DataFlow" top cards
+        if (visualization === "Counter" || ["Gauge", "Progress"].includes(visualization)) {
+            return (
+                <div className="flex flex-col justify-between h-full">
+                    <div className="flex items-end gap-2 mb-2">
+                        <span className="text-4xl font-black text-slate-800 tracking-tight">
+                            {visualization === "Counter" ? data[0]?.value || 0 : data[0]?.value + "%"}
+                        </span>
+                        {comparison && (
+                            <div className={`text-xs font-bold px-2 py-1 rounded-full flex items-center mb-1.5 ${comparison.trend === 'up' ? 'text-emerald-700 bg-emerald-100' : 'text-rose-700 bg-rose-100'}`}>
+                                {comparison.trend === 'up' ? <ArrowUpRight size={14} className="mr-1" /> : <ArrowDownRight size={14} className="mr-1" />}
+                                {comparison.formattedChange}
+                            </div>
+                        )}
+                    </div>
+                    <span className="text-xs text-slate-400 font-medium">vs last month</span>
+                </div>
+            );
+        }
 
         switch (visualization) {
             case "AreaChart":
@@ -290,9 +310,6 @@ export function KPICard({ definition, data, ghostData, comparison }: KPICardProp
 
             case "Kanban":
             case "Leaderboard":
-            case "Gauge":
-            case "Progress":
-            case "Counter":
                 return <div className="flex items-center justify-center h-full w-full">{renderMiscCharts(visualization, data, themeColor)}</div>;
 
             default:
@@ -381,21 +398,22 @@ export function KPICard({ definition, data, ghostData, comparison }: KPICardProp
     };
 
     return (
-        <Card className="h-full min-h-[180px] flex flex-col glass-card border-none shadow-lg hover:shadow-2xl transition-all duration-300 relative overflow-hidden group bg-white">
-            <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: themeColor }} />
-            <CardHeader className="pb-2 pt-5 px-5 relative z-10 flex flex-row items-center justify-between space-y-0">
-                <div>
-                    <div className="flex items-center">
-                        <CardTitle className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</CardTitle>
-                        {comparison && <DiffBadge result={comparison} />}
+        <Card className="h-full min-h-[180px] flex flex-col bg-white border-none shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-all duration-300 relative overflow-hidden group rounded-2xl">
+            <CardHeader className="pb-0 pt-6 px-6 relative z-10 flex flex-row items-center justify-between space-y-0">
+                <div className="flex flex-col bg-transparent">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="p-1.5 bg-orange-50 rounded-lg text-orange-500">
+                            {/* Icon placeholder or dynamic icon based on category logic could go here */}
+                            <div className="w-4 h-4 rounded-full border-2 border-orange-500" />
+                        </div>
+                        <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-wide">{title}</CardTitle>
                     </div>
-                    {definition.description && <CardDescription className="text-[10px] text-slate-400 mt-0.5 font-medium">{definition.description}</CardDescription>}
                 </div>
-                <div className="h-6 w-6 rounded-full flex items-center justify-center opacity-10 group-hover:opacity-100 transition-opacity bg-slate-100">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: themeColor }} />
-                </div>
+                {/* We moved the badge to the content area for counters, but keeping it here for charts if needed? 
+                    Actually, let's keep the header clean like the reference. 
+                */}
             </CardHeader>
-            <CardContent className="flex-1 w-full p-5 pt-2 relative z-10 min-h-0">
+            <CardContent className="flex-1 w-full px-6 pb-6 pt-4 relative z-10 min-h-0">
                 {renderChart()}
             </CardContent>
         </Card>
